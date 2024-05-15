@@ -1,0 +1,29 @@
+; Created automatically by https://github.com/dlubom/CaveConv
+*begin {{ cave_name }}
+
+{% for trip in cave_data.trips -%}
+; Trip details
+*date {{ trip.time.strftime('%Y.%m.%d') }}
+{% if trip.declination != 0.0 %}
+; Declination: {{ trip.declination|round(2) }} degrees
+{% endif %}
+{% if trip.comment %}
+; Comments: {{ trip.comment }}
+{% endif %}
+
+*team "John Down (change me)" compass clino tape
+*team "Jane Doe (change me)" notes pictures tape
+
+{% endfor %}
+
+*data normal from to compass clino tape
+
+{% for shot in cave_data.get_grouped_shots().itertuples() -%}
+{{ shot.from_id }}    {{ shot.to_id }}    {{ shot.azimuth|round(2) }}    {{ shot.inclination|round(2) }}    {{ shot.dist|round(3) }}{% if shot.comment -%}; {{ shot.comment }}{% endif %}
+{% endfor %}
+*flags splay
+
+{% for shot in cave_data.shots if shot.splay -%}
+{{ shot.from_id }}    .    {{ shot.azimuth|round(2) }}    {{ shot.inclination|round(2) }}    {{ shot.dist|round(3) }}{% if shot.comment -%}; {{ shot.comment }}{% endif %}
+{% endfor %}
+*end {{ cave_name }}
